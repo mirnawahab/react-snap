@@ -1,7 +1,7 @@
 const puppeteer = require("puppeteer");
 const _ = require("highland");
 const url = require("url");
-const glob = require("glob-to-regexp");
+const minimatch = require("minimatch")
 // @ts-ignore
 const mapStackTrace = require("sourcemapped-stacktrace-node").default;
 const path = require("path");
@@ -142,7 +142,8 @@ const crawl = async opt => {
     publicPath,
     sourceDir
   } = opt;
-  const exclude = options.exclude.map(g => glob(g, { extended: true, globstar: true }));
+  // const exclude = options.exclude.map(g => glob(g, { extended: true, globstar: true }));
+  // const exclude = oprions.exclude.map(g => )
   let shuttingDown = false;
   let streamClosed = false;
 
@@ -187,7 +188,7 @@ const crawl = async opt => {
     // Port can be null, therefore we need the null check
     const isOnAppPort = port && port.toString() === options.port.toString();
 
-    if (exclude.filter(regex => regex.test(pathname)).length > 0) return;
+    if (options.exclude.filter(glob => minimatch(pathname, glob)).length > 0) return;
     if (hostname === "localhost" && isOnAppPort && !uniqueUrls.has(newUrl) && !streamClosed) {
       uniqueUrls.add(newUrl);
       enqued++;
